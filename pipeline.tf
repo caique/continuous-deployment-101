@@ -4,6 +4,18 @@ provider "google" {
   region      = "us-east1"
 }
 
+resource "google_compute_firewall" "default" {
+    name    = "allow-all-traffic"
+    network = "default"
+
+    source_ranges = ["0.0.0.0/0"]
+
+    allow {
+        protocol = "tcp"
+        ports    = ["0-65534"]
+    }
+}
+
 resource "google_compute_instance" "concourse" {
     name         = "concourse"
     machine_type = "n1-standard-1"
@@ -45,15 +57,61 @@ SCRIPT
     }
 }
 
-resource "google_compute_firewall" "default" {
-    name    = "allow-all-traffic"
-    network = "default"
+resource "google_compute_instance" "prometheus" {
+    name         = "prometheus"
+    machine_type = "n1-standard-1"
+    zone       = "us-east1-b"
 
-    source_ranges = ["0.0.0.0/0"]
+    boot_disk {
+        initialize_params {
+            image = "debian-cloud/debian-9"
+        }
+    }
 
-    allow {
-        protocol = "tcp"
-        ports    = ["0-65534"]
+    metadata = {
+        startup-script = <<SCRIPT
+#!/bin/bash
+curl -sOL https://github.com/prometheus/prometheus/releases/download/v2.6.1/prometheus-2.6.1.linux-amd64.tar.gz && \
+tar xvfz prometheus-2.6.1.linux-amd64.tar.gz && \
+cd prometheus-2.6.1.linux-amd64 && \
+chmod +x prometheus && \
+./prometheus --config.file=prometheus.yml &
+
+SCRIPT
+    }
+
+    network_interface {
+        network = "default"
+        access_config {
+        }
     }
 }
+resource "google_compute_instance" "grafana" {
+    name         = "grafana"
+    machine_type = "n1-standard-1"
+    zone       = "us-east1-b"
 
+    boot_disk {
+        initialize_params {
+            image = "debian-cloud/debian-9"
+        }
+    }
+
+    metadata = {
+        startup-script = <<SCRIPT
+#!/bin/bash
+curl -sOL https://dl.grafana.com/oss/release/grafana-5.4.3.linux-amd64.tar.gz && \
+tar -zxvf grafana-5.4.3.linux-amd64.tar.gz  && \
+cd grafana-5.4.3 && \
+chmod +x ./bin/grafana-server && \
+bin/grafana-server &
+
+SCRIPT
+    }
+
+    network_interface {
+        network = "default"
+        access_config {
+        }
+    }
+}
