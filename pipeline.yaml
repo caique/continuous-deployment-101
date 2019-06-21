@@ -24,3 +24,24 @@ jobs:
           path: python
           args:
             - "myapp-code-repository/tests.py"
+
+- name: deploy to production
+  plan:
+  - get: myapp-code-repository
+    trigger: true
+    passed:
+      - run unit tests
+  - task: deploy to production
+    config:
+      platform: linux
+      image_resource:
+        type: docker-image
+        source:
+          repository: google/cloud-sdk
+          tag: 229.0.0
+      inputs:
+        - name: myapp-code-repository
+      run:
+        path: kubectl
+        args:
+          - "appy -f my-application.yml"
