@@ -1,0 +1,26 @@
+---
+resources:
+- name: myapp-code-repository
+  type: git
+  source:
+    uri: "https://github.com/caique/continuous-deployment-101"
+
+jobs:
+- name: run unit tests
+  plan:
+    - get: myapp-code-repository
+      trigger: true
+    - task: run unit tests
+      config:
+        platform: linux
+        image_resource:
+          type: docker-image
+          source:
+            repository: python
+            tag: 3.4
+        inputs:
+          - name: myapp-code-repository
+        run:
+          path: python
+          args:
+            - "myapp-code-repository/tests.py"
