@@ -17,7 +17,7 @@ spec:
     spec:
       containers:
         - name: my-application
-          image: caiquerodrigues/continuous-delivery-101-app:1.0.0
+          image: caiquerodrigues/continuous-delivery-101-app:1.1.0
           env:
             - name: AWS_ACCESS_KEY
               valueFrom:
