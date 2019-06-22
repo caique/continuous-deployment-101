@@ -18,6 +18,17 @@ spec:
       containers:
         - name: my-application
           image: caiquerodrigues/continuous-delivery-101-app:1.0.0
+          env:
+            - name: AWS_ACCESS_KEY
+              valueFrom:
+                secretKeyRef:
+                  key: aws_access_key
+                  name: aws-secrets
+            - name: AWS_SECRET_KEY
+              valueFrom:
+                secretKeyRef:
+                  key: aws_secret_key
+                  name: aws-secrets
 
 ---
 apiVersion: v1
