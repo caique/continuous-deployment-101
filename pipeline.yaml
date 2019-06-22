@@ -25,12 +25,36 @@ jobs:
           args:
             - "myapp-code-repository/tests.py"
 
-- name: deploy to production
+- name: deploy production environment changes
   plan:
   - get: myapp-code-repository
     trigger: true
     passed:
       - run unit tests
+  - task: deploy production environment changes
+    config:
+      platform: linux
+      image_resource:
+        type: docker-image
+        source:
+          repository: python
+          tag: 3.4
+      inputs:
+        - name: myapp-code-repository
+      params:
+        SERVICE_ACCOUNT_KEY: ((SERVICE_ACCOUNT_KEY))
+      run:
+        path: sh
+        args:
+          - -exc
+          - curl -LOs https://releases.hashicorp.com/terraform/0.12.2/terraform_0.12.2_linux_amd64.zip && unzip terraform_0.12.2_linux_amd64.zip && chmod +x ./terraform && mv ./terraform /usr/local/bin && echo $SERVICE_ACCOUNT_KEY > service-account-key.json && terraform init myapp-code-repository/ && terraform apply --auto-approve myapp-code-repository/
+
+- name: deploy to production
+  plan:
+  - get: myapp-code-repository
+    trigger: true
+    passed:
+      - deploy production environment changes
   - task: deploy to production
     config:
       platform: linux
