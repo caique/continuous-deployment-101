@@ -25,6 +25,10 @@ resource "google_container_cluster" "production_cluster" {
             "https://www.googleapis.com/auth/logging.write",
             "https://www.googleapis.com/auth/monitoring",
         ]
+
+        labels = {
+            dummy_label = "continuous-deployment-101" 
+        }
     }
 
     depends_on = [
