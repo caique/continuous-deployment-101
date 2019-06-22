@@ -47,4 +47,4 @@ jobs:
         path: sh
         args:
           - -exc
-          - echo -n $SERVICE_ACCOUNT_KEY > service-account-key.json && gcloud auth activate-service-account concourse@continuous-deployment-101.iam.gserviceaccount.com --key-file service-account-key.json && gcloud container clusters get-credentials production-cluster --project continuous-deployment-101 --region us-east1-b && kubectl apply -f myapp-code-repository/my-application.yml
+          - echo $SERVICE_ACCOUNT_KEY > service-account-key.json && gcloud auth activate-service-account concourse@continuous-deployment-v2.iam.gserviceaccount.com --key-file service-account-key.json && gcloud container clusters get-credentials production-cluster --project continuous-deployment-v2 --region us-east1-b && kubectl apply -f myapp-code-repository/my-application.yml
