@@ -1,0 +1,36 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: my-application
+  labels:
+    app: my-application
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: my-application
+  template:
+    metadata:
+      labels:
+        app: my-application
+    spec:
+      containers:
+        - name: my-application
+          image: caiquerodrigues/continuous-delivery-101-app:1.0.0
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: my-application
+  labels:
+    app: my-application
+spec:
+  ports:
+    - name: webserver-port
+      port: 8000
+      targetPort: 8000
+  selector:
+    app: my-application
+  type: LoadBalancer

@@ -41,7 +41,10 @@ jobs:
           tag: 229.0.0
       inputs:
         - name: myapp-code-repository
+      params:
+        SERVICE_ACCOUNT_KEY: ((SERVICE_ACCOUNT_KEY))
       run:
-        path: kubectl
+        path: sh
         args:
-          - "appy -f my-application.yml"
+          - -exc
+          - echo -n $SERVICE_ACCOUNT_KEY > service-account-key.json && gcloud auth activate-service-account concourse@continuous-deployment-101.iam.gserviceaccount.com --key-file service-account-key.json && gcloud container clusters get-credentials production-cluster --project continuous-deployment-101 --region us-east1-b && kubectl apply -f myapp-code-repository/my-application.yml
