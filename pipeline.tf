@@ -1,6 +1,6 @@
 provider "google" {
   credentials = "${file("./service-account-key.json")}"
-  project     = "continuous-deployment-101"
+  project     = "continuous-deployment-v2"
   region      = "us-east1"
 }
 
